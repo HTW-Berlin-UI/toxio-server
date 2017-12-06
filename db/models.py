@@ -1,4 +1,5 @@
 # coding: utf-8
+import datetime
 from sqlalchemy import BigInteger, Column, Date, DateTime, Float, ForeignKey,\
     Index, Integer, LargeBinary, Numeric, SmallInteger, String, Table, Text,\
     Time, VARBINARY, text as raw_text
@@ -1112,8 +1113,8 @@ class ChemScanHsUsage(Base):
     flammable = Column(SmallInteger)
     closed_system = Column(SmallInteger)
     dusting = Column(Integer)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    updated_at = Column(DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     serialized_data = Column(String(collation='utf8_unicode_ci'))
 
     hs_organization = relationship('ChemScanHsOrganization')

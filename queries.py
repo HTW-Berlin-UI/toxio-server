@@ -1,7 +1,9 @@
+import datetime
 from sqlalchemy.ext.associationproxy import association_proxy
 from db import connections
 #from db import models_manual
 from db import models
+
 
 
 def query_get_substance(testchem):
@@ -76,6 +78,33 @@ def query_get_material():
     return query
 
 
+def insert_new_hs_org(test_hs_id, testorg_id, level):
+    """before inserting a new usage, inserts data into chem_scan_hs_organization"""
+    new_hs_org = models.ChemScanHsOrganization(hs_id=test_hs_id,
+                                               organization_id=testorg_id,
+                                               active=level)
+
+    return new_hs_org
+
+
+def insert_new_usage(new_id, scope_id, proc_id, purpose_id, material_id,
+                     procedure_id, quant, ex, frequ, sur,
+                     dur, air, flamm, sys, dust):
+    """inserts emkg data into table chem_scan_hs_usage"""
+    usage = models.ChemScanHsUsage(hs_organization_id=new_id,
+                                       scope_id=scope_id,
+                                       proc_id=proc_id,
+                                       purpose_id=purpose_id,
+                                       material_id=material_id,
+                                       procedure_id=procedure_id,
+                                       qty=quant, excrete=ex,
+                                       frequency=frequ, surface=sur,
+                                       duration=dur, air_supply=air,
+                                       flammable=flamm,
+                                       closed_system=sys, dusting=dust)
+    return usage
+
+
 if __name__ == "__main__":
 
     session = connections.make_session()
@@ -83,18 +112,53 @@ if __name__ == "__main__":
     testchem1 = 'Oxytocin'
     testchem2 = 'Atropine'
     testchem3 = 'DL-Tryptophan'
+    test_hs_id = 1258 # Oxytocin
     testorg_id = 19   # Musterunternehmen
     testunit_id = 162  # Standort Köln
 
+    #testdata for new usage:
+    testscope_id = 73   # Oberflächenbehandlung
+    testproc_id = 7  # PROC15
+    testpurpose_id = 8  # Kalibrierung
+    testmaterial_id = 6 # Glas
+    testprocedure_id = 3  # Streichen
+    low = 1
+    middle = 2
+    high = 4
+    testquantity = 15
+    testdate = datetime.datetime.now
+    flammability = 1
+    dusty=3
+
+    # new usage: hs_organization_id (from chem_scan_hs_organization!!!), scope_id, proc_id, purpose_id, material_id,
+    # procedure_id, qty, excrete,frequency, surface, duration, air_supply, flammable,
+    # closed_system, dusting
+
+    new_hs_org = insert_new_hs_org(test_hs_id, testorg_id, low)
+    session.add(new_hs_org)
+    session.commit()
+
+    new_id = new_hs_org.id
 
 
+    new_usage = insert_new_usage(new_id, testscope_id, testproc_id,
+                                 testpurpose_id, testmaterial_id, testprocedure_id,
+                                 testquantity, ex=high, frequ=low, sur=middle,
+                                 dur=low, air=high, flamm=flammability, sys=low,
+                                 dust=dusty)
 
 
+    session.add(new_usage)
+    session.commit()
 
-
+    # connect plant and usage via hs_usage_plant
+    # connect usage and hs via hs_substitute
 
 
 # Bei Anlegen einer neuen Anwendung Zuordnung zu Plant über hs_usage_plant
 # Zuordnung zu einer HS und einer Organisation über hs_substitute
 
 
+# new usage consists of: insert_new_hs_org, insert_new_usage,
+# + connection plant to usage via _hs_usage_plant, and connection usage to hs via _hs_substitute
+# -> noch zu machen: new ChemScanHsUsagePlant, new ChemScanHsSubstitute
