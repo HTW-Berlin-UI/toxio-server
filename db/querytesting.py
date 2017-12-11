@@ -1,10 +1,6 @@
-from sqlalchemy.ext.associationproxy import association_proxy
-from db import connections
-#from db import models_manual
-from db import models
 import datetime
-import queries
 
+from db import connections, queries
 
 if __name__ == "__main__":
 
