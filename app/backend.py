@@ -28,21 +28,24 @@ def shutdown():
     return 'Server shutting down...'
 
 
-model = api.model('Model', {
-    'id': fields.Integer,
-    'name': fields.String,
-    'eg': fields.String,
-    'cas': fields.String,
-    'reach_nr': fields.String,
-    'formula': fields.String,
-    'approved': fields.Integer,
-    'serialized_data': fields.String})
+
 
 @api.route('/substance')
-class GetId(Resource):
-        @api.marshal_with(model, envelope='resource')
-        def get(self, **kwargs):
-            return queries.testquery('atropine', session)
+class GetSubstance(Resource):
+    """models describes the resource"""
+    model = api.model('Model', {
+        'id': fields.Integer,
+        'name': fields.String,
+        'eg': fields.String,
+        'cas': fields.String,
+        'reach_nr': fields.String,
+        'formula': fields.String,
+        'approved': fields.Integer,
+        'serialized_data': fields.String})
+
+    @api.marshal_with(model, envelope='resource')
+    def get(self, **kwargs):
+        return queries.testquery('Oxytocin', session)
 
 
 
