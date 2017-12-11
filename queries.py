@@ -4,6 +4,10 @@ from db import connections
 #from db import models_manual
 from db import models
 
+def testquery(testchem, session):
+    for instance in session.query(models.ChemScanSubstance).filter(
+        models.ChemScanSubstance.name == testchem):
+        return instance
 
 
 def query_get_substance(testchem):
@@ -18,7 +22,7 @@ def query_get_hs_id(testchem):
         models.ChemScanH.id == models.ChemScanHsSubstance.hs_id).join(
         models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
         models.ChemScanSubstance.id).filter(models.ChemScanSubstance.name==testchem):
-            return instance.id
+        return instance.id
 
 
 def query_get_sds(testchem):
@@ -29,7 +33,7 @@ def query_get_sds(testchem):
         models.ChemScanSafetyDatasheet.document_id).join(models.ChemScanH).filter(
         models.ChemScanSafetyDatasheet.hs_id == models.ChemScanH.id).filter(
         models.ChemScanH.id == hs_id):
-            return instance.filename
+        return instance.filename
 
 
 def query_get_plant1(testorg_id, testunit_id):
@@ -180,45 +184,6 @@ def new_usage(hs_id, org_id, plant_id, level, scope_id, proc_id, purpose_id,
 
 
 
-if __name__ == "__main__":
-
-    session = connections.make_session()
-
-    testchem1 = 'Oxytocin'
-    testchem2 = 'Atropine'
-    testchem3 = 'DL-Tryptophan'
-    test_hs_id = 1258 # Oxytocin
-    testorg_id = 19   # Musterunternehmen
-    testunit_id = 162  # Standort Köln
-    testplant_id = 197 # Anlage Münster
-
-    #testdata for new usage:
-    testscope_id = 73   # Oberflächenbehandlung
-    testproc_id = 7  # PROC15
-    testpurpose_id = 8  # Kalibrierung
-    testmaterial_id = 6 # Glas
-    testprocedure_id = 3  # Streichen
-    testquantity = 15
-    testdate = datetime.datetime.now
-    not_null = 0  # where not null but no value available
-    testlevel = 5
-    # for qty (quantity), ex(excrete), frequ(frequency), sur (surface),
-    # dur (duration), air (air_supply), flamm (flammable), sys (closed_system)
-    # dust (dusting) enter low, middle, high or v_high
-    low = 1
-    middle = 2
-    high = 4
-    v_high = 8
-
-
-    # new usage: hs_organization_id (from chem_scan_hs_organization!!!), scope_id, proc_id, purpose_id, material_id,
-    # procedure_id, qty, excrete,frequency, surface, duration, air_supply, flammable,
-    # closed_system, dusting
-
-
-    new_usage(test_hs_id, testorg_id, testplant_id, testlevel, testscope_id,
-              testproc_id, testpurpose_id, testmaterial_id, testprocedure_id,
-              testquantity, middle, high, low, low, v_high, low, high, middle)
 
 
 
