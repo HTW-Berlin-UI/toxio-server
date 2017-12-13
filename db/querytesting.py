@@ -45,8 +45,12 @@ if __name__ == "__main__":
    #           testquantity, middle, high, low, low, v_high, low, high, middle)
 
 
-    id = queries.testquery('Atropine', session)
-    print(id)
+    sds = queries.query_get_sds(3)
+    print(sds.filename)
+
+    #chems = queries.query_get_all_substances()
+
+    #print(chems)
 
 
 
