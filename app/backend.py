@@ -25,7 +25,7 @@ api = Api(app)
 
 @api.route('/substances')
 class Substances(Resource):
-    model = api.model('Model', {
+    model = api.model('Substance', {
         'id': fields.Integer,
         'name': fields.String,
         'eg': fields.String,
@@ -35,12 +35,45 @@ class Substances(Resource):
 
     @api.marshal_with(model)
     def get(self, **kwargs):
-        Substances = queries.query_get_all_substances()
-        return Substances
+        substances = queries.query_get_all_substances()
+        return substances
+
+
+@api.route('/hazardsubstances')
+class HazardSubstances(Resource):
+    model = api.model('HazardSubstance', {
+        'substance_id': fields.Integer,
+        'hs_number': fields.String,
+        'active': fields.Integer,
+        'manufacturer_id': fields.Integer,
+        'substance_name': fields.String,
+        'approved': fields.Integer,
+        'substance_eg': fields.String,
+        'substance_cas': fields.String,
+        'substance_formula': fields.String,
+    })
+
+    @api.marshal_with(model)
+    def get(self, **kwargs):
+        hazardsubstances = queries.query_get_all_hs()
+        result = [{
+            "substance_id": s.ChemScanSubstance.id,
+            "hs_number": s.ChemScanH.hs_number,
+            "active": s.ChemScanH.active,
+            "manufacturer_id": s.ChemScanH.manufacturer_id,
+            "substance_name": s.ChemScanSubstance.name,
+            "approved": s.ChemScanH.approved,
+            "substance_eg": s.ChemScanSubstance.eg,
+            "substance_cas": s.ChemScanSubstance.cas,
+            "substance_formula": s.ChemScanSubstance.formula,
+        } for s in hazardsubstances]
+
+        return result
+
 
 @api.route('/procedures')
 class Procedures(Resource):
-    model = api.model('Model', {
+    model = api.model('Procedure', {
         'id': fields.Integer,
         'name': fields.String,
     })
@@ -54,7 +87,7 @@ class Procedures(Resource):
 @api.param('id', 'id of the organization the user is registered to')
 @api.route('/scopes/<int:id>')
 class Scopes(Resource):
-    model = api.model('Model', {
+    model = api.model('Scope', {
         'id': fields.Integer,
         'area': fields.String,
     })
@@ -67,7 +100,7 @@ class Scopes(Resource):
 
 @api.route('/materials')
 class Materials(Resource):
-    model = api.model('Model', {
+    model = api.model('Material', {
         'id': fields.Integer,
         'name': fields.String,
     })
@@ -80,7 +113,7 @@ class Materials(Resource):
 
 @api.route('/procs')
 class Procs(Resource):
-    model = api.model('Model', {
+    model = api.model('Proc', {
         'id': fields.Integer,
         'proc': fields.String,
         'description': fields.String,
@@ -94,7 +127,7 @@ class Procs(Resource):
 
 @api.route('/purposes')
 class Purposes(Resource):
-    model = api.model('Model', {
+    model = api.model('Purpose', {
         'id': fields.Integer,
         'name': fields.String,
     })
@@ -109,7 +142,7 @@ class Purposes(Resource):
 @api.param('unit_id', 'id of the unit the plant belongs to')
 @api.route('/plants/<int:org_id>/<int:unit_id>')
 class Plants(Resource):
-    model = api.model('Model', {
+    model = api.model('Plant', {
         'id': fields.Integer,
         'abbr': fields.String,
         'name': fields.String,
@@ -125,7 +158,7 @@ class Plants(Resource):
 @api.doc('filename includes path of the requested file')
 @api.route('/sds/<int:id>')
 class SDS(Resource):
-    model = api.model('Model', {
+    model = api.model('SDS', {
         'id': fields.Integer,
         'filename': fields.String,
     })
@@ -165,12 +198,12 @@ class CSResources(Resource):
         'description': fields.String,
     })
 
-    purpose_fields = api.model('Model', {
+    purpose_fields = api.model('Purpose', {
         'id': fields.Integer,
         'name': fields.String,
     })
 
-    plant_fields = api.model('Model', {
+    plant_fields = api.model('Plant', {
         'id': fields.Integer,
         'abbr': fields.String,
         'name': fields.String,
@@ -203,7 +236,7 @@ class CSResources(Resource):
 
 @api.route('/usages')
 class Usage(Resource):
-    model = api.model('Model', {
+    model = api.model('Usage', {
         'hs_id': fields.Integer(required=True),
         'org_id': fields.Integer(required=True),
         'plant_id': fields.Integer(required=True),
@@ -214,13 +247,14 @@ class Usage(Resource):
         'material_id': fields.Integer(required=True),
         'procedure_id': fields.Integer(required=True),
         'qty': fields.Integer(required=True),
-        'excrete': fields.Integer(required=True),
-        'frequency': fields.Integer(required=True),
-        'surface': fields.Integer(required=True),
-        'duration': fields.Integer(required=True),
-        'air_supply': fields.Integer(required=True),
-        'flammable': fields.Integer(required=True),
-        'closed_system': fields.Integer(required=True),
+        # Änderung zu Strings: LOW, MIDDLE, HIGH, VERY_HIGH
+        'excrete': fields.String(required=True),
+        'frequency': fields.String(required=True),
+        'surface': fields.String(required=True),
+        'duration': fields.String(required=True),
+        'air_supply': fields.String(required=True),
+        'flammable': fields.Integer(required=True),  # yes or no -> 1 or 0
+        'closed_system': fields.Integer(required=True), # yes or no -> 1 or 0
         'dusting': fields.Integer(required=True)
     })
 
@@ -229,7 +263,32 @@ class Usage(Resource):
     def post(self):
         # api.payload is a dict -> all values have to be extracted before
         # passing to new_usage function
-        queries.post_new_usage(api.payload)
+
+        hs_id = api.payload['hs_id']
+        org_id = api.payload['org_id']
+        plant_id = api.payload['plant_id']
+        active = api.payload['active']
+        scope_id = api.payload['scope_id']
+        proc_id = api.payload['proc_id']
+        purpose_id = api.payload['purpose_id']
+        material_id = api.payload['material_id']
+        procedure_id = api.payload['procedure_id']
+        qty = api.payload['qty']
+        excrete = api.payload['excrete']
+        frequency = api.payload['frequency']
+        surface = api.payload['surface']
+        duration = api.payload['duration']
+        air_supply = api.payload['air_supply']
+        flammable = api.payload['flammable']
+        closed_system = api.payload['closed_system']
+        dusting = api.payload['dusting']
+
+
+        queries.post_new_usage(hs_id, org_id, plant_id, active, scope_id,
+                               proc_id, purpose_id, material_id, procedure_id,
+                               qty, excrete, frequency, surface, duration,
+                               air_supply, flammable, closed_system, dusting)
+
 
 
 

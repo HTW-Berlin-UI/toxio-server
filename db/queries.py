@@ -5,6 +5,17 @@ from db import connections
 from db import models
 
 # some constants
+VERY_HIGH = "VERY_HIGH"
+HIGH = "HIGH"
+MIDDLE = "MIDDLE"
+LOW = "LOW"
+
+EXPOSITION_FOO = {
+    VERY_HIGH: 8,
+    HIGH: 4,
+    MIDDLE: 2,
+    LOW: 1
+}
 
 
 
@@ -13,6 +24,20 @@ def query_get_all_substances():
     session = connections.get_session()
     query = session.query(models.ChemScanSubstance).all()
     return query
+
+
+def query_get_all_hs():
+    """joins chem_scan_hs and chem_scan_substance"""
+    session = connections.get_session()
+
+    query = session.query(models.ChemScanH, models.ChemScanSubstance).join(models.ChemScanHsSubstance).filter(
+        models.ChemScanH.id == models.ChemScanHsSubstance.hs_id).join(
+        models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
+        models.ChemScanSubstance.id).all()
+
+    return query
+
+
 
 def query_get_hsid(query_id):
     """enter a substance id and get matching hs id"""
@@ -39,6 +64,10 @@ def query_get_substance(testchem):
         models.ChemScanSubstance.name == testchem):
 
         return instance.name
+
+
+
+
 
 def query_get_hs_id(query_id):
     """ enter substance name and get hs_id from chem_scan_hs"""
@@ -197,6 +226,8 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
 
     """
 
+    excrete = EXPOSITION_FOO[excrete]
+
     session = connections.get_session()
     new_hs_org = insert_new_hs_org(hs_id, org_id, active)
     session.add(new_hs_org)
@@ -226,28 +257,11 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
     session.commit()
 
 
-def post_new_usage(param_dict):
-    """gets api.payload dict with values, extracts them, and creates new usage"""
-    hs_id = param_dict['hs_id']
-    org_id = param_dict['org_id']
-    plant_id = param_dict['plant_id']
-    active = param_dict['active']
-    scope_id = param_dict['scope_id']
-    proc_id = param_dict['proc_id']
-    purpose_id = param_dict['purpose_id']
-    material_id = param_dict['material_id']
-    procedure_id = param_dict['procedure_id']
-    qty = param_dict['qty']
-    excrete = param_dict['excrete']
-    frequency = param_dict['frequency']
-    surface = param_dict['surface']
-    duration = param_dict['duration']
-    air_supply = param_dict['air_supply']
-    flammable = param_dict['flammable']
-    closed_system = param_dict['closed_system']
-    dusting = param_dict['dusting']
+def post_new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
+              material_id, procedure_id, qty, excrete, frequency, surface,
+              duration, air_supply, flammable, closed_system, dusting):
 
-    # pass extracted values to function that creates a new usage
+
     new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
               material_id, procedure_id, qty, excrete, frequency, surface,
               duration, air_supply, flammable, closed_system, dusting)

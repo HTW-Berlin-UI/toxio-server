@@ -4,7 +4,7 @@ from db import connections, queries
 
 if __name__ == "__main__":
 
-    session = connections.make_session()
+
 
 
 
@@ -45,8 +45,14 @@ if __name__ == "__main__":
    #           testquantity, middle, high, low, low, v_high, low, high, middle)
 
 
-    sds = queries.query_get_sds(3)
-    print(sds.filename)
+
+res = queries.query_get_all_hs()
+#print(res[0])
+print(res[0][0].__dict__)
+print(res[0][1].__dict__)
+
+
+
 
     #chems = queries.query_get_all_substances()
 
