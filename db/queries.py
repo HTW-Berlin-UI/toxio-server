@@ -4,37 +4,100 @@ from db import connections
 #from db import models_manual
 from db import models
 
+# some constants
+VERY_HIGH = "VERY_HIGH"
+HIGH = "HIGH"
+MIDDLE = "MIDDLE"
+LOW = "LOW"
+
+EXPOSITION_FOO = {
+    VERY_HIGH: 8,
+    HIGH: 4,
+    MIDDLE: 2,
+    LOW: 1
+}
+
+
+
+def query_get_all_substances():
+    """get a list of all chemicals in chem_scan_substance"""
+    session = connections.get_session()
+    query = session.query(models.ChemScanSubstance).all()
+    return query
+
+
+def query_get_all_hs():
+    """joins chem_scan_hs and chem_scan_substance"""
+    session = connections.get_session()
+
+    query = session.query(models.ChemScanH, models.ChemScanSubstance).join(models.ChemScanHsSubstance).filter(
+        models.ChemScanH.id == models.ChemScanHsSubstance.hs_id).join(
+        models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
+        models.ChemScanSubstance.id).all()
+
+    return query
+
+
+
+def query_get_hsid(query_id):
+    """enter a substance id and get matching hs id"""
+    session = connections.get_session()
+    for instance in session.query(models.ChemScanHsSubstance).filter(
+        models.ChemScanHsSubstance.substance_id == query_id):
+        return instance
+
+def testquery(testchem):
+    session = connections.get_session()
+
+    for instance in session.query(models.ChemScanSubstance).filter(
+        models.ChemScanSubstance.name == testchem):
+
+        return instance
+
+
 
 
 def query_get_substance(testchem):
     """enter substance name and get substance_id from chem_scan_substance"""
+    session = connections.get_session()
     for instance in session.query(models.ChemScanSubstance).filter(
         models.ChemScanSubstance.name == testchem):
+
         return instance.name
 
-def query_get_hs_id(testchem):
+
+
+
+
+def query_get_hs_id(query_id):
     """ enter substance name and get hs_id from chem_scan_hs"""
+    session = connections.get_session()
     for instance in session.query(models.ChemScanH).join(models.ChemScanHsSubstance).filter(
         models.ChemScanH.id == models.ChemScanHsSubstance.hs_id).join(
         models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
-        models.ChemScanSubstance.id).filter(models.ChemScanSubstance.name==testchem):
-            return instance.id
+        models.ChemScanSubstance.id).filter(models.ChemScanSubstance.id==query_id):
+        return instance.id
 
 
-def query_get_sds(testchem):
+def query_get_sds(query_id):
     """enter a substance name and get the filename for the sds"""
-    hs_id = query_get_hs_id(testchem)
+    session = connections.get_session()
+    # first get hs_id for given substance_id (query_id)
+    hs_id = query_get_hs_id(query_id)
     for instance in session.query(models.OroAttachmentFile).join(
         models.ChemScanSafetyDatasheet).filter(models.OroAttachmentFile.id ==
         models.ChemScanSafetyDatasheet.document_id).join(models.ChemScanH).filter(
         models.ChemScanSafetyDatasheet.hs_id == models.ChemScanH.id).filter(
         models.ChemScanH.id == hs_id):
-            return instance.filename
+        # add a path to find document with filename
+        instance.filename = '/..path../' + instance.filename
+        return instance
 
 
 def query_get_plant1(testorg_id, testunit_id):
     """enter organization AND unit and get all plants ->
     test data plant = Lackierroboter AL-Pig I"""
+    session = connections.get_session()
 
     query = session.query(models.ChemScanPlant).join(models.OroOrganization).filter(
         models.OroOrganization.id == models.ChemScanPlant.organization_id).join(
@@ -45,44 +108,50 @@ def query_get_plant1(testorg_id, testunit_id):
 
 def query_get_plant2(testorg_id):
     """enter an organization and get all plants"""
+    session = connections.get_session()
     query = session.query(models.ChemScanPlant).join(models.OroOrganization).filter(
         models.OroOrganization.id == models.ChemScanPlant.organization_id).filter(
                 models.OroOrganization.id == testorg_id).all()
     return query
 
 
-def query_get_scope(testorg_id):
+def query_get_scopes(testorg_id):
     """list of scopes for given organization"""
+    session = connections.get_session()
     query = session.query(models.ChemScanScope).filter(
             models.ChemScanScope.organization_id == testorg_id).all()
     return query
 
-def query_get_proc():
+def query_get_procs():
     """list of all procs"""
+    session = connections.get_session()
     query = session.query(models.ChemScanProc).all()
     return query
 
-def query_get_purpose():
+def query_get_purposes():
     """list of all purposes"""
+    session = connections.get_session()
     query = session.query(models.ChemScanPurpose).all()
     return query
 
-def query_get_procedure():
+def query_get_procedures():
     """list of all procedures"""
+    session = connections.get_session()
     query = session.query(models.ChemScanProcedure).all()
     return query
 
-def query_get_material():
+def query_get_materials():
     """list of all materials"""
+    session = connections.get_session()
     query = session.query(models.ChemScanMaterial).all()
     return query
 
 
-def insert_new_hs_org(test_hs_id, testorg_id, level):
+def insert_new_hs_org(test_hs_id, testorg_id, active):
     """before inserting a new usage, inserts data into chem_scan_hs_organization"""
     new_hs_org = models.ChemScanHsOrganization(hs_id=test_hs_id,
                                                organization_id=testorg_id,
-                                               active=level)
+                                               active=active)
 
     return new_hs_org
 
@@ -145,80 +214,57 @@ def new_substitute(new_hs_substitution, org_id, hs_id, new_hs_usage_id):
     return new_hs_sub
 
 
-def new_usage(hs_id, org_id, plant_id, level, scope_id, proc_id, purpose_id,
-              material_id, procedure_id, quant, ex, frequ, sur, dur, air,
-              flamm, sys, dust):
+def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
+              material_id, procedure_id, qty, excrete, frequency, surface,
+              duration, air_supply, flammable, closed_system, dusting):
     """all inserts necessary to make a new usage:
     - connection usage to organization: entry to chem_scan_hs_organization
     - new usage: entry to chem_scan_hs_usage
     - connection between usage and plant: entry to chem_scan_hs_usage_plant
     - necessary entry to chem_scan_hs_substitution
     - connection between usage and hazard substance: entry to chem_scan_hs_substitute
+
     """
-    new_hs_org = insert_new_hs_org(hs_id, org_id, level)
+
+    excrete = EXPOSITION_FOO[excrete]
+
+    session = connections.get_session()
+    new_hs_org = insert_new_hs_org(hs_id, org_id, active)
     session.add(new_hs_org)
     session.commit()
     new_id = new_hs_org.id  # usage needs id from chem_scan_hs_org
-    new_usage = insert_new_usage(new_id, scope_id, proc_id, purpose_id, material_id,
-                     procedure_id, quant, ex, frequ, sur, dur, air, flamm,
-                     sys, dust)
+    new_usage = insert_new_usage(new_id, scope_id, proc_id, purpose_id,
+                                 material_id, procedure_id, qty, excrete,
+                                 frequency, surface, duration, air_supply,
+                                 flammable, closed_system, dusting)
     session.add(new_usage)
     session.commit()
     new_hs_usage_id = new_usage.id
-    new_hs_plant = hs_plant(new_hs_usage_id, plant_id, quant)
+    new_hs_plant = hs_plant(new_hs_usage_id, plant_id, qty)
     session.add(new_hs_plant)
     session.commit()
     new_hs_substitution = hs_substitution(hs_id, new_hs_usage_id,
-                    org_id, purpose_id, material_id,
-                    procedure_id, proc_id, quant, ex, frequ, sur, dur,
-                    air)
+                                          org_id, purpose_id, material_id,
+                                          procedure_id, proc_id, qty,
+                                          excrete, frequency, surface,
+                                          duration, air_supply)
+
     session.add(new_hs_substitution)
     session.commit()
-    new_hs_sub = new_substitute(new_hs_substitution, org_id, hs_id, new_hs_usage_id)
+    new_hs_sub = new_substitute(new_hs_substitution, org_id, hs_id,
+                                new_hs_usage_id)
     session.add(new_hs_sub)
     session.commit()
 
 
-
-if __name__ == "__main__":
-
-    session = connections.make_session()
-
-    testchem1 = 'Oxytocin'
-    testchem2 = 'Atropine'
-    testchem3 = 'DL-Tryptophan'
-    test_hs_id = 1258 # Oxytocin
-    testorg_id = 19   # Musterunternehmen
-    testunit_id = 162  # Standort Köln
-    testplant_id = 197 # Anlage Münster
-
-    #testdata for new usage:
-    testscope_id = 73   # Oberflächenbehandlung
-    testproc_id = 7  # PROC15
-    testpurpose_id = 8  # Kalibrierung
-    testmaterial_id = 6 # Glas
-    testprocedure_id = 3  # Streichen
-    testquantity = 15
-    testdate = datetime.datetime.now
-    not_null = 0  # where not null but no value available
-    testlevel = 5
-    # for qty (quantity), ex(excrete), frequ(frequency), sur (surface),
-    # dur (duration), air (air_supply), flamm (flammable), sys (closed_system)
-    # dust (dusting) enter low, middle, high or v_high
-    low = 1
-    middle = 2
-    high = 4
-    v_high = 8
+def post_new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
+              material_id, procedure_id, qty, excrete, frequency, surface,
+              duration, air_supply, flammable, closed_system, dusting):
 
 
-    # new usage: hs_organization_id (from chem_scan_hs_organization!!!), scope_id, proc_id, purpose_id, material_id,
-    # procedure_id, qty, excrete,frequency, surface, duration, air_supply, flammable,
-    # closed_system, dusting
-
-
-    new_usage(test_hs_id, testorg_id, testplant_id, testlevel, testscope_id,
-              testproc_id, testpurpose_id, testmaterial_id, testprocedure_id,
-              testquantity, middle, high, low, low, v_high, low, high, middle)
+    new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
+              material_id, procedure_id, qty, excrete, frequency, surface,
+              duration, air_supply, flammable, closed_system, dusting)
 
 
 
