@@ -9,12 +9,25 @@ VERY_HIGH = "VERY_HIGH"
 HIGH = "HIGH"
 MIDDLE = "MIDDLE"
 LOW = "LOW"
+NONE = "NONE"
 
 EXPOSITION_FOO = {
     VERY_HIGH: 8,
     HIGH: 4,
     MIDDLE: 2,
     LOW: 1
+}
+
+QUANTITY = {
+    VERY_HIGH: 8,
+    HIGH: 4,
+    MIDDLE: 2,
+    LOW: 1
+}
+
+FREQUENCY = {
+    LOW: 1,
+    NONE: 0
 }
 
 
@@ -227,6 +240,8 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
     """
 
     excrete = EXPOSITION_FOO[excrete]
+    qty = QUANTITY[qty]
+    frequency = FREQUENCY[frequency]
 
     session = connections.get_session()
     new_hs_org = insert_new_hs_org(hs_id, org_id, active)
