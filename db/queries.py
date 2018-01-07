@@ -11,6 +11,11 @@ MIDDLE = "MIDDLE"
 LOW = "LOW"
 NONE = "NONE"
 
+ACTIVE = {
+    LOW: 1,
+    NONE: 0
+}
+
 EXPOSITION_FOO = {
     VERY_HIGH: 8,
     HIGH: 4,
@@ -30,7 +35,32 @@ FREQUENCY = {
     NONE: 0
 }
 
+SURFACE = {
+    HIGH: 4,
+    LOW: 1
+}
 
+DURATION = {
+    HIGH: 4,
+    LOW: 1
+}
+
+AIR_SUPPLY = {
+    VERY_HIGH: 8,
+    HIGH: 4,
+    MIDDLE: 2,
+    LOW: 1
+}
+
+FLAMMABLE = {
+    LOW: 1,
+    NONE: 0
+}
+
+CLOSED_SYSTEM = {
+    LOW: 1,
+    NONE: 0
+}
 
 def query_get_all_substances():
     """get a list of all chemicals in chem_scan_substance"""
@@ -239,9 +269,15 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
 
     """
 
+    active = ACTIVE[active]
     excrete = EXPOSITION_FOO[excrete]
     qty = QUANTITY[qty]
     frequency = FREQUENCY[frequency]
+    surface = SURFACE[surface]
+    duration = DURATION[duration]
+    air_supply = AIR_SUPPLY[air_supply]
+    flammable = FLAMMABLE[flammable]
+    closed_system = CLOSED_SYSTEM[closed_system]
 
     session = connections.get_session()
     new_hs_org = insert_new_hs_org(hs_id, org_id, active)
