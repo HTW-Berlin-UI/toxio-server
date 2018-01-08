@@ -22,10 +22,19 @@ if __name__ == "__main__":
     testpurpose_id = 8  # Kalibrierung
     testmaterial_id = 6 # Glas
     testprocedure_id = 3  # Streichen
-    testquantity = 15
+    testquantity = "LOW"
+    testexcrete = "LOW"
+    testfrequency = "LOW"
+    testsurface = "LOW"
+    testduration = "LOW"
+    testairsupply = "LOW"
+    testflammable = "LOW"
+    testclosedsystem = "LOW"
+    testdusting = "NO"
+    testactive = "NO"
     testdate = datetime.datetime.now
     not_null = 0  # where not null but no value available
-    testlevel = 5
+    testlevel = 1
     # for qty (quantity), ex(excrete), frequ(frequency), sur (surface),
     # dur (duration), air (air_supply), flamm (flammable), sys (closed_system)
     # dust (dusting) enter low, middle, high or v_high
@@ -40,9 +49,10 @@ if __name__ == "__main__":
     # closed_system, dusting
 
 
-   # queries.new_usage(test_hs_id, testorg_id, testplant_id, testlevel, testscope_id,
-    #          testproc_id, testpurpose_id, testmaterial_id, testprocedure_id,
-   #           testquantity, middle, high, low, low, v_high, low, high, middle)
+    queries.new_usage(test_hs_id, testorg_id, testplant_id, testactive, testscope_id,
+          testproc_id, testpurpose_id, testmaterial_id, testprocedure_id,
+          testquantity, testexcrete, testfrequency, testsurface, testduration,
+          testairsupply, testflammable, testclosedsystem, testdusting)
 
 
 

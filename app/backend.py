@@ -9,7 +9,7 @@ from db import queries
 app = Flask(__name__)
 
 app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'mysql+mysqlconnector://root:root@localhost/chem_scan'
+    'mysql+mysqlconnector://root:root@localhost/chemscan'
 
 db = SQLAlchemy(app)
 api = Api(app)

@@ -7,7 +7,7 @@ def make_session():
     """establishes a connection to the db"""
 
     engine = create_engine(
-        'mysql+mysqlconnector://root:root@localhost/chem_scan', echo=True)
+        'mysql+mysqlconnector://root:123@localhost/chemscan', echo=True)
 
     Session = sessionmaker(bind=engine)
     Session.configure(bind=engine)

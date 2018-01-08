@@ -8,7 +8,7 @@ from db import models
 VERY_HIGH = "VERY_HIGH"
 HIGH = "HIGH"
 MIDDLE = "MIDDLE"
-LOW_OR_YES = "LOW"
+LOW = "LOW"
 NO = "NO"
 
 
@@ -17,7 +17,7 @@ PARAMETER_FOO = {
     VERY_HIGH: 8,
     HIGH: 4,
     MIDDLE: 2,
-    LOW_OR_YES: 1,
+    LOW: 1,
     NO: 0
 }
 
@@ -238,6 +238,7 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
     air_supply = PARAMETER_FOO[air_supply]
     flammable = PARAMETER_FOO[flammable]
     closed_system = PARAMETER_FOO[closed_system]
+    dusting = PARAMETER_FOO[dusting]
 
     session = connections.get_session()
     new_hs_org = insert_new_hs_org(hs_id, org_id, active)
