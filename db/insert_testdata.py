@@ -3,6 +3,12 @@ from db import connections
 #from db import models_manual
 from db import models
 
+"""
+run this file before queries!!!
+
+
+"""
+
 
 if __name__ == "__main__":
 
@@ -17,7 +23,6 @@ if __name__ == "__main__":
     # test sds file_names for oxy, atro and trypto link to these hs_ids
 
 
-
     oxy = models.ChemScanHsSubstance(substance_id=3, hs_id=1258, amount=10)
     session.add(oxy)
     atro = models.ChemScanHsSubstance(substance_id=54, hs_id=1259, amount=10)
@@ -26,6 +31,7 @@ if __name__ == "__main__":
     session.add(trypto)
 
     session.commit()
+
 
 
 

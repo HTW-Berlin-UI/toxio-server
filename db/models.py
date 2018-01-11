@@ -1,4 +1,5 @@
 # coding: utf-8
+import datetime
 from sqlalchemy import BigInteger, Column, Date, DateTime, Float, ForeignKey,\
     Index, Integer, LargeBinary, Numeric, SmallInteger, String, Table, Text,\
     Time, VARBINARY, text as raw_text
@@ -970,8 +971,11 @@ class ChemScanHsOrganization(Base):
     additional_info_1 = Column(String(collation='utf8_unicode_ci'))
     additional_info_2 = Column(String(collation='utf8_unicode_ci'))
     additional_info_3 = Column(String(collation='utf8_unicode_ci'))
-    created_at = Column(DateTime)
-    updated_at = Column(DateTime)
+    created_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now,
+                        onupdate=datetime.datetime.now)
     serialized_data = Column(String(collation='utf8_unicode_ci'))
 
     hs = relationship('ChemScanH')
@@ -1036,8 +1040,11 @@ class ChemScanHsSubstitute(Base):
     hs_id = Column(ForeignKey('chem_scan_hs.id', ondelete='CASCADE'), nullable=False, index=True)
     hs_usage_id = Column(ForeignKey('chem_scan_hs_usage.id', ondelete='CASCADE'), nullable=False, index=True)
     hs_substitution_id = Column(ForeignKey('chem_scan_hs_substitution.id', ondelete='CASCADE'), nullable=False, index=True)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now,
+                        onupdate=datetime.datetime.now)
     serialized_data = Column(String(collation='utf8_unicode_ci'))
 
     hs = relationship('ChemScanH')
@@ -1070,8 +1077,11 @@ class ChemScanHsSubstitution(Base):
     economy_reason = Column(String(collation='utf8_unicode_ci'))
     env_reason = Column(String(collation='utf8_unicode_ci'))
     technical_reason = Column(String(collation='utf8_unicode_ci'))
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now)
+    updated_at = Column(DateTime, nullable=False,
+                        default=datetime.datetime.now,
+                        onupdate=datetime.datetime.now)
     hs_data = Column(String(collation='utf8_unicode_ci'), nullable=False)
     hs_substitute_data = Column(String(collation='utf8_unicode_ci'), nullable=False)
     serialized_data = Column(String(collation='utf8_unicode_ci'))
@@ -1112,8 +1122,8 @@ class ChemScanHsUsage(Base):
     flammable = Column(SmallInteger)
     closed_system = Column(SmallInteger)
     dusting = Column(Integer)
-    created_at = Column(DateTime, nullable=False)
-    updated_at = Column(DateTime, nullable=False)
+    created_at = Column(DateTime, nullable=False, default=datetime.datetime.now)
+    updated_at = Column(DateTime, nullable=False, default=datetime.datetime.now, onupdate=datetime.datetime.now)
     serialized_data = Column(String(collation='utf8_unicode_ci'))
 
     hs_organization = relationship('ChemScanHsOrganization')
