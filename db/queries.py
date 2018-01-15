@@ -9,6 +9,7 @@ VERY_HIGH = "VERY_HIGH"
 HIGH = "HIGH"
 MIDDLE = "MIDDLE"
 LOW = "LOW"
+YES = "YES"
 NO = "NO"
 
 
@@ -18,6 +19,7 @@ PARAMETER_FOO = {
     HIGH: 4,
     MIDDLE: 2,
     LOW: 1,
+    YES: 1,
     NO: 0
 }
 
