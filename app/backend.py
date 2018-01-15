@@ -240,22 +240,22 @@ class Usage(Resource):
         'hs_id': fields.Integer(required=True),
         'org_id': fields.Integer(required=True),
         'plant_id': fields.Integer(required=True),
-        'active': fields.Integer(required=True),
+        'active': fields.Integer(required=False),
         'scope_id': fields.Integer(required=True),
-        'proc_id': fields.Integer(required=True),
+        'proc_id': fields.Integer(required=False),
         'purpose_id': fields.Integer(required=True),
         'material_id': fields.Integer(required=True),
-        'procedure_id': fields.Integer(required=True),
-        'qty': fields.Integer(required=True),
+        'procedure_id': fields.Integer(required=False),
+        'qty': fields.String(required=True),
         # Änderung zu Strings: LOW, MIDDLE, HIGH, VERY_HIGH
         'excrete': fields.String(required=True),
         'frequency': fields.String(required=True),
         'surface': fields.String(required=True),
         'duration': fields.String(required=True),
         'air_supply': fields.String(required=True),
-        'flammable': fields.Integer(required=True),  # yes or no -> 1 or 0
-        'closed_system': fields.Integer(required=True), # yes or no -> 1 or 0
-        'dusting': fields.Integer(required=True)
+        'flammable': fields.String(required=True),  # yes or no -> 1 or 0
+        'closed_system': fields.String(required=True), # yes or no -> 1 or 0
+        'dusting': fields.String(required=False)
     })
 
 
