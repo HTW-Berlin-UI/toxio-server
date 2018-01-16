@@ -95,7 +95,7 @@ def query_get_sds(query_id):
         models.ChemScanSafetyDatasheet.hs_id == models.ChemScanH.id).filter(
         models.ChemScanH.id == hs_id):
         # add a path to find document with filename
-        instance.filename = '/..path../' + instance.filename
+        instance.filename = '/documents/datasheets/' + instance.filename
         return instance
 
 

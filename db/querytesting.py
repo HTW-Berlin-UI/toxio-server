@@ -61,7 +61,8 @@ res = queries.query_get_all_hs()
 print(res[0][0].__dict__)
 print(res[0][1].__dict__)
 
-
+res = queries.query_get_sds(54)
+print(res.filename)
 
 
     #chems = queries.query_get_all_substances()
