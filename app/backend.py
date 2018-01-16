@@ -2,14 +2,14 @@ from flask import Flask
 from flask import request
 from flask_restplus import Api, Resource, fields, marshal
 from flask_sqlalchemy import SQLAlchemy
-from flask_restplus import reqparse
 
-from db import queries
+
+from db import queries, connections
 
 app = Flask(__name__)
 
-app.config['SQLALCHEMY_DATABASE_URI'] =\
-    'mysql+mysqlconnector://root:root@localhost/chemscan'
+app.config['SQLALCHEMY_DATABASE_URI'] = connections.make_dsn()
+
 
 db = SQLAlchemy(app)
 api = Api(app)
