@@ -1,8 +1,11 @@
-from flask import Flask
+import io
+
+from flask import Flask, Response
 from flask import request
 from flask_restplus import Api, Resource, fields, marshal
 from flask_sqlalchemy import SQLAlchemy
-
+import qrcode
+import qrcode.image.svg
 
 from db import queries, connections
 
@@ -21,6 +24,30 @@ api = Api(app)
 # -> substances/resources; endpoint for all substances; endpoint get all plants
 # for specific organization and unit; endpoint for sds
 # POST: new usage
+
+
+
+
+
+
+
+
+
+@api.route('/qrcode')
+class QrCode(Resource):
+    def get(self):
+        # create qr code with white background
+        factory = qrcode.image.svg.SvgFillImage
+        img = qrcode.make('some data', image_factory=factory)
+        # create buffered stream to write in
+        stream = io.BytesIO()
+        # save image into stream
+        img.save(stream)
+        # Response expects bytes -> cast
+        buffer = bytes(stream.getbuffer())
+
+        return Response(buffer, mimetype="image/svg+xml")
+
 
 
 @api.route('/substances')

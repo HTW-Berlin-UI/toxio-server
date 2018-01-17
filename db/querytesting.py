@@ -1,4 +1,5 @@
 import datetime
+import qrcode
 
 from db import connections, queries
 
@@ -68,7 +69,6 @@ print(res.filename)
     #chems = queries.query_get_all_substances()
 
     #print(chems)
-
 
 
 
