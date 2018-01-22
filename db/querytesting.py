@@ -51,7 +51,7 @@ if __name__ == "__main__":
     # closed_system, dusting
 
 
-    queries.new_usage(test_hs_id, testorg_id, testplant_id, testactive, testscope_id,
+    queries.create_usage(test_hs_id, testorg_id, testplant_id, testactive, testscope_id,
           testproc_id, testpurpose_id, testmaterial_id, testprocedure_id,
           testquantity, testexcrete, testfrequency, testsurface, testduration,
           testairsupply, testflammable, testclosedsystem, testdusting)

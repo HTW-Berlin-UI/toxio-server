@@ -219,7 +219,7 @@ def new_substitute(new_hs_substitution, org_id, hs_id, new_hs_usage_id):
     return new_hs_sub
 
 
-def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
+def create_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
               material_id, procedure_id, qty, excrete, frequency, surface,
               duration, air_supply, flammable, closed_system, dusting):
     """all inserts necessary to make a new usage:
@@ -231,7 +231,7 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
 
     """
 
-    active = PARAMETER[active]
+    #active = PARAMETER[active]
     excrete = PARAMETER[excrete]
     qty = PARAMETER[qty]
     frequency = PARAMETER[frequency]
@@ -269,20 +269,6 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
                                 new_hs_usage_id)
     session.add(new_hs_sub)
     session.commit()
-
-
-def post_new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
-              material_id, procedure_id, qty, excrete, frequency, surface,
-              duration, air_supply, flammable, closed_system, dusting):
-
-
-    new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
-              material_id, procedure_id, qty, excrete, frequency, surface,
-              duration, air_supply, flammable, closed_system, dusting)
-
-
-
-
 
 
 

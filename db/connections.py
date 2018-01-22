@@ -2,7 +2,7 @@ import os
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
-_session = None
+_engine = None
 
 def make_dsn():
     """get db-config from environment"""
@@ -16,11 +16,9 @@ def make_dsn():
 
     return db_dsn
 
-def make_session():
+def make_session(engine):
     """establishes a connection to the db"""
 
-    db_dsn = make_dsn()
-    engine = create_engine(db_dsn, echo=True)
 
     Session = sessionmaker(bind=engine)
     Session.configure(bind=engine)
@@ -32,12 +30,13 @@ def make_session():
 
 
 def get_session():
-    global _session
+    global _engine
 
-    if _session == None:
-        _session = make_session()
+    if _engine == None:
+        db_dsn = make_dsn()
+        _engine = create_engine(db_dsn, echo=True)
 
-    return _session
+    return make_session(_engine)
 
 
 
