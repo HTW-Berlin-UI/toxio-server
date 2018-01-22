@@ -28,6 +28,7 @@ def query_get_all_substances():
     """get a list of all chemicals in chem_scan_substance"""
     session = connections.get_session()
     query = session.query(models.ChemScanSubstance).all()
+    session.close()
     return query
 
 
@@ -39,6 +40,7 @@ def query_get_all_hs():
         models.ChemScanH.id == models.ChemScanHsSubstance.hs_id).join(
         models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
         models.ChemScanSubstance.id).all()
+    session.close()
 
     return query
 
@@ -50,6 +52,7 @@ def query_get_hsid(query_id):
     for instance in session.query(models.ChemScanHsSubstance).filter(
         models.ChemScanHsSubstance.substance_id == query_id):
         return instance
+    session.close()
 
 def testquery(testchem):
     session = connections.get_session()
@@ -58,6 +61,7 @@ def testquery(testchem):
         models.ChemScanSubstance.name == testchem):
 
         return instance
+    session.close()
 
 
 
@@ -69,6 +73,7 @@ def query_get_substance(testchem):
         models.ChemScanSubstance.name == testchem):
 
         return instance.name
+    session.close()
 
 
 
@@ -82,6 +87,7 @@ def query_get_hs_id(query_id):
         models.ChemScanSubstance).filter(models.ChemScanHsSubstance.substance_id==
         models.ChemScanSubstance.id).filter(models.ChemScanSubstance.id==query_id):
         return instance.id
+    session.close()
 
 
 def query_get_sds(query_id):
@@ -96,7 +102,9 @@ def query_get_sds(query_id):
         models.ChemScanH.id == hs_id):
         # add a path to find document with filename
         instance.filename = '/documents/datasheets/' + instance.filename
+
         return instance
+    session.close()
 
 
 def query_get_plant1(testorg_id, testunit_id):
@@ -109,6 +117,7 @@ def query_get_plant1(testorg_id, testunit_id):
         models.ChemScanOrganizationUnit).filter(models.ChemScanOrganizationUnit.id==
         models.ChemScanPlant.organization_unit_id).filter(models.OroOrganization.id == testorg_id,
         models.ChemScanOrganizationUnit.id == testunit_id).all()
+    session.close()
     return query
 
 def query_get_plant2(testorg_id):
@@ -117,6 +126,7 @@ def query_get_plant2(testorg_id):
     query = session.query(models.ChemScanPlant).join(models.OroOrganization).filter(
         models.OroOrganization.id == models.ChemScanPlant.organization_id).filter(
                 models.OroOrganization.id == testorg_id).all()
+    session.close()
     return query
 
 
@@ -125,31 +135,37 @@ def query_get_scopes(testorg_id):
     session = connections.get_session()
     query = session.query(models.ChemScanScope).filter(
             models.ChemScanScope.organization_id == testorg_id).all()
+    session.close()
     return query
 
 def query_get_procs():
     """list of all procs"""
     session = connections.get_session()
     query = session.query(models.ChemScanProc).all()
+    session.close()
     return query
 
 def query_get_purposes():
     """list of all purposes"""
     session = connections.get_session()
     query = session.query(models.ChemScanPurpose).all()
+    session.close()
     return query
 
 def query_get_procedures():
     """list of all procedures"""
     session = connections.get_session()
     query = session.query(models.ChemScanProcedure).all()
+    session.close()
     return query
 
 def query_get_materials():
     """list of all materials"""
     session = connections.get_session()
     query = session.query(models.ChemScanMaterial).all()
+    session.close()
     return query
+
 
 
 def insert_new_hs_org(test_hs_id, testorg_id, active):
@@ -272,6 +288,7 @@ def create_usage(hs_id, org_id, plant_ids, active, scope_id, proc_id, purpose_id
                                 new_hs_usage_id)
     session.add(new_hs_sub)
     session.commit()
+    session.close()
 
 
 def query_get_hsnumber(query_id):
