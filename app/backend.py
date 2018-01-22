@@ -3,6 +3,7 @@ import io
 from flask import Flask, Response
 from flask import request
 from flask_restplus import Api, Resource, fields, marshal
+from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
 import qrcode
 import qrcode.image.svg
@@ -16,6 +17,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = connections.make_dsn()
 
 db = SQLAlchemy(app)
 api = Api(app)
+CORS(app)
 
 # API endpoints, include only neccessary fields (not things like additional_info, serialized_data...)
 # Endpoints:
