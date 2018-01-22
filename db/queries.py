@@ -271,6 +271,15 @@ def create_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
     session.commit()
 
 
+def query_get_hsnumber(query_id):
+    """get hsnumber"""
+    session = connections.get_session()
+    #query = session.query(models.ChemScanH.hs_number)
+
+    for instance in session.query(models.ChemScanH).filter(
+        models.ChemScanH.id == query_id):
+
+        return instance.hs_number
 
 
 

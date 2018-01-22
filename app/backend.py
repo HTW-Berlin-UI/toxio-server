@@ -27,18 +27,22 @@ api = Api(app)
 
 
 
-
-
-
-
-
-
-@api.route('/qrcode')
+@api.route('/substances/<int:hs_id>/<int:organization_id>/<int:unit_id>/qrcode')
 class QrCode(Resource):
-    def get(self):
+    def get(self, hs_id, organization_id, unit_id):
+        # data for qr code
+        qr_hs_number = queries.query_get_hsnumber(hs_id)
+
+        # schema: <prefix>?<organizationID>-<unitID>-<hsNumber>-<hsID>
+        qr_data = "toxio://open?{}-{}-{}-{}".format(organization_id,
+                                                    unit_id,
+                                                    qr_hs_number,
+                                                    hs_id)
+
+
         # create qr code with white background
         factory = qrcode.image.svg.SvgFillImage
-        img = qrcode.make('some data', image_factory=factory)
+        img = qrcode.make(data=qr_data, image_factory=factory)
         # create buffered stream to write in
         stream = io.BytesIO()
         # save image into stream
@@ -47,6 +51,7 @@ class QrCode(Resource):
         buffer = bytes(stream.getbuffer())
 
         return Response(buffer, mimetype="image/svg+xml")
+
 
 
 
@@ -64,6 +69,7 @@ class Substances(Resource):
     def get(self, **kwargs):
         substances = queries.query_get_all_substances()
         return substances
+
 
 
 @api.route('/hazardsubstances')
