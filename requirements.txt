@@ -13,3 +13,4 @@ six==1.11.0
 SQLAlchemy==1.2.1
 Werkzeug==0.12.2
 qrcode==5.3
+Flask-Cors==3.0.3
