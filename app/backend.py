@@ -5,6 +5,9 @@ from flask import request
 from flask_restplus import Api, Resource, fields, marshal
 from flask_cors import CORS
 from flask_sqlalchemy import SQLAlchemy
+
+
+from flask_restplus import reqparse
 import qrcode
 import qrcode.image.svg
 
@@ -18,6 +21,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = connections.make_dsn()
 db = SQLAlchemy(app)
 api = Api(app)
 CORS(app)
+
+
 
 # API endpoints, include only neccessary fields (not things like additional_info, serialized_data...)
 # Endpoints:
@@ -213,6 +218,7 @@ class CSResources(Resource):
     """get all necessary data for a new usage: procedures, scopes,materials,
      procs, purposes, plants, and put them into a nested dictionary"""
 
+
     procedure_fields = api.model('Procedures', {
         'id': fields.Integer,
         'name': fields.String,
@@ -272,10 +278,13 @@ class CSResources(Resource):
 
 @api.route('/usages')
 class Usage(Resource):
+    # for adding several plants
+
+
     model = api.model('Usage', {
         'hs_id': fields.Integer(required=True),
         'org_id': fields.Integer(required=True),
-        'plant_id': fields.Integer(required=True),
+        'plant_ids': fields.List(fields.Integer(), required=True),
         'active': fields.Integer(required=False),
         'scope_id': fields.Integer(required=True),
         'proc_id': fields.Integer(required=False),
@@ -283,7 +292,6 @@ class Usage(Resource):
         'material_id': fields.Integer(required=True),
         'procedure_id': fields.Integer(required=False),
         'qty': fields.String(required=True),
-        # Änderung zu Strings: LOW, MIDDLE, HIGH, VERY_HIGH
         'excrete': fields.String(required=True),
         'frequency': fields.String(required=True),
         'surface': fields.String(required=True),
@@ -302,7 +310,7 @@ class Usage(Resource):
 
         hs_id = api.payload['hs_id']
         org_id = api.payload['org_id']
-        plant_id = api.payload['plant_id']
+        plant_ids = api.payload['plant_ids']
         active = api.payload.get('active', 'NO')
         scope_id = api.payload['scope_id']
         proc_id = api.payload.get('proc_id')
@@ -319,7 +327,7 @@ class Usage(Resource):
         closed_system = api.payload['closed_system']
         dusting = api.payload.get('dusting')
 
-        queries.create_usage(hs_id, org_id, plant_id, active, scope_id,
+        queries.create_usage(hs_id, org_id, plant_ids, active, scope_id,
                              proc_id, purpose_id, material_id, procedure_id,
                              qty, excrete, frequency, surface, duration,
                              air_supply, flammable, closed_system, dusting)
