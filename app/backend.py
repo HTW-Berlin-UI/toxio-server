@@ -82,8 +82,10 @@ class HazardSubstances(Resource):
 
     @api.marshal_with(model)
     def get(self, **kwargs):
+
         hazardsubstances = queries.query_get_all_hs()
         result = [{
+
             "substance_id": s.ChemScanSubstance.id,
             "hs_number": s.ChemScanH.hs_number,
             "active": s.ChemScanH.active,
@@ -215,8 +217,7 @@ class CSResources(Resource):
 
     materials_fields = api.model('Materials', {
         'id': fields.Integer,
-        'proc': fields.String,
-        'description': fields.String,
+        'name': fields.String,
     })
 
     procs_fields = api.model('Procs', {
@@ -294,12 +295,12 @@ class Usage(Resource):
         hs_id = api.payload['hs_id']
         org_id = api.payload['org_id']
         plant_id = api.payload['plant_id']
-        active = api.payload['active']
+        active = api.payload.get('active', 'NO')
         scope_id = api.payload['scope_id']
-        proc_id = api.payload['proc_id']
+        proc_id = api.payload.get('proc_id')
         purpose_id = api.payload['purpose_id']
         material_id = api.payload['material_id']
-        procedure_id = api.payload['procedure_id']
+        procedure_id = api.payload.get('procedure_id')
         qty = api.payload['qty']
         excrete = api.payload['excrete']
         frequency = api.payload['frequency']
@@ -308,7 +309,7 @@ class Usage(Resource):
         air_supply = api.payload['air_supply']
         flammable = api.payload['flammable']
         closed_system = api.payload['closed_system']
-        dusting = api.payload['dusting']
+        dusting = api.payload.get('dusting')
 
 
         queries.post_new_usage(hs_id, org_id, plant_id, active, scope_id,

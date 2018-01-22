@@ -1,5 +1,6 @@
 import datetime
 import qrcode
+from db import models
 
 from db import connections, queries
 
@@ -72,3 +73,11 @@ print(res.filename)
 
 
 
+def query_get_materials():
+    """list of all materials"""
+    session = connections.get_session()
+    query = session.query(models.ChemScanMaterial).all()
+    return query
+
+res2 = query_get_materials()
+print(res2)

@@ -14,7 +14,7 @@ NO = "NO"
 
 
 
-PARAMETER_FOO = {
+PARAMETER = {
     VERY_HIGH: 8,
     HIGH: 4,
     MIDDLE: 2,
@@ -231,16 +231,16 @@ def new_usage(hs_id, org_id, plant_id, active, scope_id, proc_id, purpose_id,
 
     """
 
-    active = PARAMETER_FOO[active]
-    excrete = PARAMETER_FOO[excrete]
-    qty = PARAMETER_FOO[qty]
-    frequency = PARAMETER_FOO[frequency]
-    surface = PARAMETER_FOO[surface]
-    duration = PARAMETER_FOO[duration]
-    air_supply = PARAMETER_FOO[air_supply]
-    flammable = PARAMETER_FOO[flammable]
-    closed_system = PARAMETER_FOO[closed_system]
-    dusting = PARAMETER_FOO[dusting]
+    active = PARAMETER[active]
+    excrete = PARAMETER[excrete]
+    qty = PARAMETER[qty]
+    frequency = PARAMETER[frequency]
+    surface = PARAMETER[surface]
+    duration = PARAMETER[duration]
+    air_supply = PARAMETER[air_supply]
+    flammable = PARAMETER[flammable]
+    closed_system = PARAMETER[closed_system]
+    dusting = PARAMETER[dusting]
 
     session = connections.get_session()
     new_hs_org = insert_new_hs_org(hs_id, org_id, active)
