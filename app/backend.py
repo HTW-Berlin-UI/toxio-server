@@ -311,11 +311,10 @@ class Usage(Resource):
         closed_system = api.payload['closed_system']
         dusting = api.payload.get('dusting')
 
-
-        queries.post_new_usage(hs_id, org_id, plant_id, active, scope_id,
-                               proc_id, purpose_id, material_id, procedure_id,
-                               qty, excrete, frequency, surface, duration,
-                               air_supply, flammable, closed_system, dusting)
+        queries.create_usage(hs_id, org_id, plant_id, active, scope_id,
+                             proc_id, purpose_id, material_id, procedure_id,
+                             qty, excrete, frequency, surface, duration,
+                             air_supply, flammable, closed_system, dusting)
 
 
 
