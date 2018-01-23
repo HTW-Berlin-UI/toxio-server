@@ -83,6 +83,7 @@ class Substances(Resource):
 class HazardSubstances(Resource):
     model = api.model('HazardSubstance', {
         'substance_id': fields.Integer,
+        'hs_id': fields.Integer,
         'hs_number': fields.String,
         'active': fields.Integer,
         'manufacturer_id': fields.Integer,
@@ -100,6 +101,7 @@ class HazardSubstances(Resource):
         result = [{
 
             "substance_id": s.ChemScanSubstance.id,
+            "hs_id": s.ChemScanH.id,
             "hs_number": s.ChemScanH.hs_number,
             "active": s.ChemScanH.active,
             "manufacturer_id": s.ChemScanH.manufacturer_id,
@@ -204,7 +206,7 @@ class SDS(Resource):
         'id': fields.Integer,
         'filename': fields.String,
     })
-# !!! dummy path!!! needs to be changed in queries.py!!!
+
     @api.marshal_with(model)
     def get(self, id):
         SDS = queries.query_get_sds(id)
